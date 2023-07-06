@@ -28,7 +28,8 @@ public class TcpClient : MonoBehaviour
     public Text textDisplay;
 
 	// Might have to make this static
-    private static int calibrationStep = 0;
+    private static int calibrationStep = 1;
+    private static int currentStep = 0;
 
     private int currentLineIndex = 1;
 
@@ -51,14 +52,14 @@ public class TcpClient : MonoBehaviour
 
 	public void OnCalibrationButtonPress()
     {
-        if(calibrationStep == 0 || calibrationStep == 4){
+        if(currentStep == 0 || currentStep == 4){
             SendMessage("calibration");
-            calibrationStep = 1;
 		    textDisplay.text = "Calibration Mode";
         }
-        if(calibrationStep < 4){
+        if(currentStep < 4){
             SendMessage("calibration_step_" + calibrationStep);
         }
+        currentStep = calibrationStep;
     }
 
     public void OnUnityModeButtonPress()
@@ -145,7 +146,7 @@ public class TcpClient : MonoBehaviour
         if (data.Length > 1 && float.TryParse(data[0], out _) && float.TryParse(data[1], out _))
         {
             // Data represents angles, return it as is
-            calibrationStep = 4;
+            currentStep = 4;
             return data;
         }
 
@@ -157,15 +158,17 @@ public class TcpClient : MonoBehaviour
             // Data represents a calibration step, update the calibrationStep variable
 			// TODO: Might just change this to got to IDLE until button is pressed
             if(step == "complete"){
-                // TODO: When calibration step in incremented sendMessage to Pico to move to next step
                 calibrationStep++;
+                currentStep = 0;
+                // TODO: continue fixing text display within this thread (might have to use a coroutine)
                 if(calibrationStep < 4){		        
                     // textDisplay.text = "Calibration Step: " + calibrationStep + "Complete \nPress button to continue";
-                    Debug.Log("Calibration Step: " + calibrationStep + "Complete \nPress button to continue");
+                    Debug.Log("Calibration Step: " + (calibrationStep-1) + " Complete \nPress button to continue");
                 }
                 if(calibrationStep == 4){
-		            textDisplay.text = "Calibration Complete!";
-                    calibrationStep = 0;
+		            // textDisplay.text = "Calibration Complete!";
+                    calibrationStep = 1;
+                    currentStep = 0;
                 }
             }
             return new string[0];
@@ -179,11 +182,12 @@ public class TcpClient : MonoBehaviour
     void Update()
     {
         // Move finger based on calibration step
-        switch (calibrationStep)
+        switch (currentStep)
         {
             case 0:
                 // IDLE state
                 // Do nothing during the initial default state
+                textDisplay.text = "WBA Capstone IDLE Mode";
                 break;
             case 1:
                 // Perform calibration step 1
