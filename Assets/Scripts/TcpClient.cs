@@ -101,9 +101,7 @@ public class TcpClient : MonoBehaviour
                         {
                             // Data represents angles
                             recievedAngles = parsedData;
-                            Debug.Log("Received angles: " + serverMessage);
                         }
-                        Debug.Log("server message received as: " + serverMessage);
                     }
                 }
             }
@@ -139,37 +137,41 @@ public class TcpClient : MonoBehaviour
 
     public string[] ParseData(string dataString)
     {
-        string[] data = dataString.Split(',');
+        int firstNewLineIndex = dataString.IndexOf('\n');
 
         // Check if the data represents angles
-        // TODO: Change this to parse based on what the Pico will send for angles
-        if (data.Length > 1 && float.TryParse(data[0], out _) && float.TryParse(data[1], out _))
+        if (firstNewLineIndex >= 0)
         {
+            string trimmedData = dataString.Substring(0, firstNewLineIndex);
+            string[] data = trimmedData.Split(',');
+
+            if(data.Length != 10){
+                int secondNewLineIndex = dataString.IndexOf('\n', firstNewLineIndex+1);
+                string trimmedData2 = dataString.Substring(firstNewLineIndex+1, secondNewLineIndex-firstNewLineIndex-1);
+                data = trimmedData2.Split(',');
+            }
+
             // Data represents angles, return it as is
             currentStep = 4;
             return data;
         }
 
         // Check if the data represents a calibration step
-        // TODO: Change this to parse based on what the Pico will send to initiate calibration
-        if (data.Length == 1)
+        if (dataString.Contains("complete"))
         {
-            string step = data[0];
             // Data represents a calibration step, update the calibrationStep variable
-			// TODO: Might just change this to got to IDLE until button is pressed
-            if(step == "complete"){
-                calibrationStep++;
+            calibrationStep++;
+            currentStep = 0;
+
+            // TODO: might be able to remove this, check IDLE mode
+            if(calibrationStep < 4){		        
+                // textDisplay.text = "Calibration Step: " + calibrationStep + "Complete \nPress button to continue";
+                Debug.Log("Calibration Step: " + (calibrationStep-1) + " Complete \nPress button to continue");
+            }
+            if(calibrationStep == 4){
+                // textDisplay.text = "Calibration Complete!";
+                calibrationStep = 1;
                 currentStep = 0;
-                // TODO: continue fixing text display within this thread (might have to use a coroutine)
-                if(calibrationStep < 4){		        
-                    // textDisplay.text = "Calibration Step: " + calibrationStep + "Complete \nPress button to continue";
-                    Debug.Log("Calibration Step: " + (calibrationStep-1) + " Complete \nPress button to continue");
-                }
-                if(calibrationStep == 4){
-		            // textDisplay.text = "Calibration Complete!";
-                    calibrationStep = 1;
-                    currentStep = 0;
-                }
             }
             return new string[0];
         }
@@ -188,6 +190,16 @@ public class TcpClient : MonoBehaviour
                 // IDLE state
                 // Do nothing during the initial default state
                 textDisplay.text = "WBA Capstone IDLE Mode";
+
+                // TODO: test this to see if it works as expected in between calibration steps'
+                // TODO: might be able to remove the 1<=calibrationStep check
+                if(1 <= calibrationStep && calibrationStep < 4){
+                    textDisplay.text = "Calibration Step: " + (calibrationStep-1) + " Complete \nPress button to continue";
+                }
+                else if(calibrationStep == 4){
+                    textDisplay.text = "Calibration Complete!";
+                }
+
                 break;
             case 1:
                 // Perform calibration step 1
@@ -248,47 +260,51 @@ public class TcpClient : MonoBehaviour
 
 	private void ProcessAngles(string[] angles)
     {
-        // Implementation for reading angles from Pico after calibration is done
-        // Modify the code based on your specific requirements
-        // float thumb_mcp_angle = float.Parse(angles[0]);
-        float thumb_pip_angle = float.Parse(angles[0]);
-        float thumb_dip_angle = float.Parse(angles[1]);
+        try{
+            // float thumb_mcp_angle = float.Parse(angles[0]);
+            float thumb_pip_angle = float.Parse(angles[0]);
+            float thumb_dip_angle = float.Parse(angles[1]);
 
-		float index_mcp_angle = float.Parse(angles[2]);
-        float index_pip_angle = float.Parse(angles[3]);
-        float index_dip_angle = float.Parse(angles[3]);
+            float index_mcp_angle = float.Parse(angles[2]);
+            float index_pip_angle = float.Parse(angles[3]);
+            float index_dip_angle = float.Parse(angles[3]);
 
-		float middle_mcp_angle = float.Parse(angles[4]);
-        float middle_pip_angle = float.Parse(angles[5]);
-        float middle_dip_angle = float.Parse(angles[5]);
+            float middle_mcp_angle = float.Parse(angles[4]);
+            float middle_pip_angle = float.Parse(angles[5]);
+            float middle_dip_angle = float.Parse(angles[5]);
 
-		float ring_mcp_angle = float.Parse(angles[6]);
-        float ring_pip_angle = float.Parse(angles[7]);
-        float ring_dip_angle = float.Parse(angles[7]);
+            float ring_mcp_angle = float.Parse(angles[6]);
+            float ring_pip_angle = float.Parse(angles[7]);
+            float ring_dip_angle = float.Parse(angles[7]);
 
-		float pinky_mcp_angle = float.Parse(angles[8]);
-        float pinky_pip_angle = float.Parse(angles[9]);
-        float pinky_dip_angle = float.Parse(angles[9]);
+            float pinky_mcp_angle = float.Parse(angles[8]);
+            float pinky_pip_angle = float.Parse(angles[9]);
+            float pinky_dip_angle = float.Parse(angles[9]);
 
-        b_l_thumb1.transform.localEulerAngles = new Vector3(0, 180, 45);
-        b_l_thumb2.transform.localEulerAngles = new Vector3(-15, 0, -thumb_pip_angle);
-        b_l_thumb3.transform.localEulerAngles = new Vector3(0, 0, -thumb_dip_angle);
+            b_l_thumb1.transform.localEulerAngles = new Vector3(0, 180, 45);
+            b_l_thumb2.transform.localEulerAngles = new Vector3(-15, 0, -thumb_pip_angle);
+            b_l_thumb3.transform.localEulerAngles = new Vector3(0, 0, -thumb_dip_angle);
 
-		b_l_index1.transform.localEulerAngles = new Vector3(-90, 0, 180 - index_mcp_angle);
-        b_l_index2.transform.localEulerAngles = new Vector3(0, 0, -index_pip_angle);
-        b_l_index3.transform.localEulerAngles = new Vector3(0, 0, -index_dip_angle);
+            b_l_index1.transform.localEulerAngles = new Vector3(-90, 0, 180 - index_mcp_angle);
+            b_l_index2.transform.localEulerAngles = new Vector3(0, 0, -index_pip_angle);
+            b_l_index3.transform.localEulerAngles = new Vector3(0, 0, -index_dip_angle);
 
-		b_l_middle1.transform.localEulerAngles = new Vector3(-90, 0, 180 - middle_mcp_angle);
-        b_l_middle2.transform.localEulerAngles = new Vector3(0, 0, -middle_pip_angle);
-        b_l_middle3.transform.localEulerAngles = new Vector3(0, 0, -middle_dip_angle);
-		
-		b_l_ring1.transform.localEulerAngles = new Vector3(-90, 0, 180 - ring_mcp_angle);
-        b_l_ring2.transform.localEulerAngles = new Vector3(0, 0, -ring_pip_angle);
-        b_l_ring3.transform.localEulerAngles = new Vector3(0, 0, -ring_dip_angle);
-		
-		b_l_pinky1.transform.localEulerAngles = new Vector3(0, 0, 180 - pinky_mcp_angle);
-        b_l_pinky2.transform.localEulerAngles = new Vector3(0, 0, -pinky_pip_angle);
-        b_l_pinky3.transform.localEulerAngles = new Vector3(0, 0, -pinky_dip_angle);
+            b_l_middle1.transform.localEulerAngles = new Vector3(-90, 0, 180 - middle_mcp_angle);
+            b_l_middle2.transform.localEulerAngles = new Vector3(0, 0, -middle_pip_angle);
+            b_l_middle3.transform.localEulerAngles = new Vector3(0, 0, -middle_dip_angle);
+            
+            b_l_ring1.transform.localEulerAngles = new Vector3(-90, 0, 180 - ring_mcp_angle);
+            b_l_ring2.transform.localEulerAngles = new Vector3(0, 0, -ring_pip_angle);
+            b_l_ring3.transform.localEulerAngles = new Vector3(0, 0, -ring_dip_angle);
+            
+            b_l_pinky1.transform.localEulerAngles = new Vector3(0, 0, 180 - pinky_mcp_angle);
+            b_l_pinky2.transform.localEulerAngles = new Vector3(0, 0, -pinky_pip_angle);
+            b_l_pinky3.transform.localEulerAngles = new Vector3(0, 0, -pinky_dip_angle);
+        }
+        catch(Exception e){
+            Debug.Log("Exception" + e + "\n Angles: "+ string.Join(", ", angles));
+        }
+        
     }
 
 }
