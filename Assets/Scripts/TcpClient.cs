@@ -64,6 +64,7 @@ public class TcpClient : MonoBehaviour
 
     public void OnUnityModeButtonPress()
     {
+        currentStep = 4;
         // Send a special string to middleware to start unity mode
         SendMessage("unityMode");
 		textDisplay.text = "Unity Display Mode";
@@ -84,7 +85,7 @@ public class TcpClient : MonoBehaviour
     {
         try
         {
-            socketConnection = new System.Net.Sockets.TcpClient("10.0.0.118", connectionPort);
+            socketConnection = new System.Net.Sockets.TcpClient("192.168.1.105", connectionPort);
             Byte[] bytes = new Byte[1024];
             while (true)
             {
@@ -152,7 +153,6 @@ public class TcpClient : MonoBehaviour
             }
 
             // Data represents angles, return it as is
-            currentStep = 4;
             return data;
         }
 
@@ -191,9 +191,8 @@ public class TcpClient : MonoBehaviour
                 // Do nothing during the initial default state
                 textDisplay.text = "WBA Capstone IDLE Mode";
 
-                // TODO: test this to see if it works as expected in between calibration steps'
-                // TODO: might be able to remove the 1<=calibrationStep check
-                if(1 <= calibrationStep && calibrationStep < 4){
+                // TODO: test this to see if it works as expected in between calibration steps
+                if(1 < calibrationStep && calibrationStep < 4){
                     textDisplay.text = "Calibration Step: " + (calibrationStep-1) + " Complete \nPress button to continue";
                 }
                 else if(calibrationStep == 4){
@@ -214,7 +213,8 @@ public class TcpClient : MonoBehaviour
                 CalibrationStep3();
                 break;
             default:
-                // Default state after calibration is done
+                // VR Mode: Move finger based on recieved angles
+		        textDisplay.text = "Unity Display Mode";
                 ProcessAngles(recievedAngles);
                 break;
         }
