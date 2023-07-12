@@ -17,7 +17,7 @@ public class TcpClient : MonoBehaviour
 
     public float sensitivity = 0.01f;
 
-	public string[]   = new string[10];
+	public string[] recievedAngles = new string[10];
 	public Transform b_l_thumb1, b_l_thumb2, b_l_thumb3;
     public Transform b_l_index1, b_l_index2, b_l_index3;
     public Transform b_l_middle1, b_l_middle2, b_l_middle3;
