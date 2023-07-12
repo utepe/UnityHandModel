@@ -17,7 +17,7 @@ public class TcpClient : MonoBehaviour
 
     public float sensitivity = 0.01f;
 
-	public string[] recievedAngles = new string[10];
+	public string[]   = new string[10];
 	public Transform b_l_thumb1, b_l_thumb2, b_l_thumb3;
     public Transform b_l_index1, b_l_index2, b_l_index3;
     public Transform b_l_middle1, b_l_middle2, b_l_middle3;
@@ -43,6 +43,8 @@ public class TcpClient : MonoBehaviour
     public string calibrationStep3FilePath = "Assets/Scripts/calibrationStep3.txt";
 
     void Start () {
+        Application.targetFrameRate = 30; // Limit frame rate to 30 FPS
+
         calibrationStep1Lines = File.ReadAllLines(calibrationStep1FilePath);
         calibrationStep2Lines = File.ReadAllLines(calibrationStep2FilePath);
         calibrationStep3Lines = File.ReadAllLines(calibrationStep3FilePath);
@@ -64,10 +66,15 @@ public class TcpClient : MonoBehaviour
 
     public void OnUnityModeButtonPress()
     {
-        currentStep = 4;
-        // Send a special string to middleware to start unity mode
-        SendMessage("unityMode");
-		textDisplay.text = "Unity Display Mode";
+        if(currentStep == 4){
+            SendMessage("stopSending");
+            currentStep = 0;
+        }
+        else{
+            currentStep = 4;
+            // Send a special string to middleware to start unity mode
+            SendMessage("unityMode");
+        }
     }  	
 
 	private void ConnectToTcpServer () { 		
@@ -85,7 +92,7 @@ public class TcpClient : MonoBehaviour
     {
         try
         {
-            socketConnection = new System.Net.Sockets.TcpClient("192.168.1.105", connectionPort);
+            socketConnection = new System.Net.Sockets.TcpClient("10.0.0.118", connectionPort);
             Byte[] bytes = new Byte[1024];
             while (true)
             {
@@ -214,8 +221,9 @@ public class TcpClient : MonoBehaviour
                 break;
             default:
                 // VR Mode: Move finger based on recieved angles
-		        textDisplay.text = "Unity Display Mode";
+		        textDisplay.text = "Unity Display Mode \nPress Button to return to IDLE Mode";
                 ProcessAngles(recievedAngles);
+                // SendMessage("-");
                 break;
         }
     }
