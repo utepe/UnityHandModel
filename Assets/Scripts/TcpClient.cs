@@ -49,7 +49,7 @@ public class TcpClient : MonoBehaviour
         calibrationStep2Lines = File.ReadAllLines(calibrationStep2FilePath);
         calibrationStep3Lines = File.ReadAllLines(calibrationStep3FilePath);
 
-		ConnectToTcpServer();     
+		ConnectToTcpServer();
 	}
 
 	public void OnCalibrationButtonPress()
@@ -92,7 +92,7 @@ public class TcpClient : MonoBehaviour
     {
         try
         {
-            socketConnection = new System.Net.Sockets.TcpClient("10.0.0.118", connectionPort);
+            socketConnection = new System.Net.Sockets.TcpClient("192.168.1.105", connectionPort);
             Byte[] bytes = new Byte[1024];
             while (true)
             {
@@ -155,8 +155,10 @@ public class TcpClient : MonoBehaviour
 
             if(data.Length != 10){
                 int secondNewLineIndex = dataString.IndexOf('\n', firstNewLineIndex+1);
-                string trimmedData2 = dataString.Substring(firstNewLineIndex+1, secondNewLineIndex-firstNewLineIndex-1);
-                data = trimmedData2.Split(',');
+                if(secondNewLineIndex >= 0){
+                    string trimmedData2 = dataString.Substring(firstNewLineIndex+1, secondNewLineIndex-firstNewLineIndex-1);
+                    data = trimmedData2.Split(',');
+                }
             }
 
             // Data represents angles, return it as is
