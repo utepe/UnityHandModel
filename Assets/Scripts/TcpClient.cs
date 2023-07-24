@@ -77,6 +77,19 @@ public class TcpClient : MonoBehaviour
         }
     }  	
 
+    public void OnWBAModeButtonPress()
+    {
+        if(currentStep == 5){
+            SendMessage("stopSending");
+            currentStep = 0;
+        }
+        else{
+            currentStep = 5;
+            // Send a special string to middleware to start WBA mode
+            SendMessage("WBAMode");
+        }
+    }  	
+
 	private void ConnectToTcpServer () { 		
 		try {  			
 			clientReceiveThread = new Thread(new ThreadStart(ListenForData)); 			
@@ -221,11 +234,16 @@ public class TcpClient : MonoBehaviour
                 // Perform calibration step 3
                 CalibrationStep3();
                 break;
-            default:
+            case 4:
                 // VR Mode: Move finger based on recieved angles
 		        textDisplay.text = "Unity Display Mode \nPress Button to return to IDLE Mode";
                 ProcessAngles(recievedAngles);
                 // SendMessage("-");
+                break;
+            case 5:
+                textDisplay.text = "WBA Mode \n Please direct attention to WBA Hand";
+                break;
+            default:
                 break;
         }
     }
