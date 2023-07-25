@@ -66,27 +66,27 @@ public class TcpClient : MonoBehaviour
 
     public void OnUnityModeButtonPress()
     {
-        if(currentStep == 4){
-            SendMessage("stopSending");
-            currentStep = 0;
-        }
-        else{
+        if(currentStep != 4){
             currentStep = 4;
             // Send a special string to middleware to start unity mode
             SendMessage("unityMode");
+        }
+        else{
+            SendMessage("stopSending");
+            currentStep = 0;
         }
     }  	
 
     public void OnWBAModeButtonPress()
     {
-        if(currentStep == 5){
-            SendMessage("stopSending");
-            currentStep = 0;
-        }
-        else{
-            currentStep = 5;
+        if(currentStep != 5){
+           currentStep = 5;
             // Send a special string to middleware to start WBA mode
             SendMessage("WBAMode");
+        }
+        else{
+            SendMessage("stopSending");
+            currentStep = 0;
         }
     }  	
 
@@ -213,7 +213,6 @@ public class TcpClient : MonoBehaviour
                 // Do nothing during the initial default state
                 textDisplay.text = "WBA Capstone IDLE Mode";
 
-                // TODO: test this to see if it works as expected in between calibration steps
                 if(1 < calibrationStep && calibrationStep < 4){
                     textDisplay.text = "Calibration Step: " + (calibrationStep-1) + " Complete \nPress button to continue";
                 }
@@ -238,7 +237,6 @@ public class TcpClient : MonoBehaviour
                 // VR Mode: Move finger based on recieved angles
 		        textDisplay.text = "Unity Display Mode \nPress Button to return to IDLE Mode";
                 ProcessAngles(recievedAngles);
-                // SendMessage("-");
                 break;
             case 5:
                 textDisplay.text = "WBA Mode \n Please direct attention to WBA Hand";
