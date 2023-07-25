@@ -209,6 +209,7 @@ public class TcpClient : MonoBehaviour
                 // IDLE state
                 // Do nothing during the initial default state
                 textDisplay.text = "WBA Capstone IDLE Mode";
+                ProcessAngles(new string[10] {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"});
 
                 if(1 < calibrationStep && calibrationStep < 4){
                     textDisplay.text = "Calibration Step: " + (calibrationStep-1) + " Complete \nPress button to continue";
