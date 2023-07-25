@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
@@ -107,7 +107,7 @@ public class TcpClient : MonoBehaviour
     {
         try
         {
-            socketConnection = new System.Net.Sockets.TcpClient("192.168.1.105", connectionPort);
+            socketConnection = new System.Net.Sockets.TcpClient("192.168.1.102", connectionPort);
             Byte[] bytes = new Byte[1024];
             while (true)
             {
@@ -188,13 +188,7 @@ public class TcpClient : MonoBehaviour
             calibrationStep++;
             currentStep = 0;
 
-            // TODO: might be able to remove this, check IDLE mode
-            if(calibrationStep < 4){		        
-                // textDisplay.text = "Calibration Step: " + calibrationStep + "Complete \nPress button to continue";
-                Debug.Log("Calibration Step: " + (calibrationStep-1) + " Complete \nPress button to continue");
-            }
             if(calibrationStep == 4){
-                // textDisplay.text = "Calibration Complete!";
                 calibrationStep = 1;
                 currentStep = 0;
             }
