@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
@@ -16,6 +16,8 @@ public class TcpClient : MonoBehaviour
     public int connectionPort = 80;
 
     public float sensitivity = 0.01f;
+
+    Boolean socketExceptionFlag;
 
 	public string[] recievedAngles = new string[10];
 	public Transform b_l_thumb1, b_l_thumb2, b_l_thumb3;
@@ -129,6 +131,7 @@ public class TcpClient : MonoBehaviour
         }
         catch (SocketException socketException)
         {
+            socketExceptionFlag = true;
             Debug.Log("Socket exception: " + socketException);
         }
     }
@@ -218,6 +221,10 @@ public class TcpClient : MonoBehaviour
                 }
                 else if(calibrationStep == 4){
                     textDisplay.text = "Calibration Complete!";
+                }
+
+                if(socketExceptionFlag){
+                    textDisplay.text = "Socket Exception: Connection Attempt Failed \nCheck Connection";
                 }
 
                 break;
