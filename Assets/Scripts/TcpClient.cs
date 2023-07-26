@@ -56,14 +56,15 @@ public class TcpClient : MonoBehaviour
 
 	public void OnCalibrationButtonPress()
     {
-        if(currentStep == 0 || currentStep == 4){
+        if(currentStep != 1 || currentStep != 2 || currentStep != 3){
             SendMessage("calibration");
 		    textDisplay.text = "Calibration Mode";
         }
+        currentStep = calibrationStep;
         if(currentStep < 4){
             SendMessage("calibration_step_" + calibrationStep);
         }
-        currentStep = calibrationStep;
+        Debug.Log(currentStep);
     }
 
     public void OnUnityModeButtonPress()
@@ -107,7 +108,7 @@ public class TcpClient : MonoBehaviour
     {
         try
         {
-            socketConnection = new System.Net.Sockets.TcpClient("192.168.1.102", connectionPort);
+            socketConnection = new System.Net.Sockets.TcpClient("192.168.1.131", connectionPort);
             Byte[] bytes = new Byte[1024];
             while (true)
             {
@@ -253,21 +254,21 @@ public class TcpClient : MonoBehaviour
 	// MCP changing, PIP fixed @ 0
     private void CalibrationStep1()
     {
-        textDisplay.text = "Calibration Step 1 \nMCP changing, PIP fixed @ 0";
+        textDisplay.text = "Calibration Step 1 \nPlease mimic this hand motion";
         HandleCalibrationFile(calibrationStep1Lines);
     }
 
     // MCP fixed @ 0, PIP changing
     private void CalibrationStep2()
     {
-        textDisplay.text = "Calibration Step 2 \nMCP fixed @ 0, PIP changing";
+        textDisplay.text = "Calibration Step 2 \nPlease mimic this hand motion";
         HandleCalibrationFile(calibrationStep2Lines);
     }
 
     // MCP fixed @ 90, PIP changing 
     private void CalibrationStep3()
     {
-        textDisplay.text = "Calibration Step 3 \nMCP fixed @ 90, PIP changing";
+        textDisplay.text = "Calibration Step 3 \nPlease mimic this hand motion";
         HandleCalibrationFile(calibrationStep3Lines);
     }
 
