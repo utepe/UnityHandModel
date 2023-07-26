@@ -64,7 +64,6 @@ public class TcpClient : MonoBehaviour
         if(currentStep < 4){
             SendMessage("calibration_step_" + calibrationStep);
         }
-        Debug.Log(currentStep);
     }
 
     public void OnUnityModeButtonPress()
