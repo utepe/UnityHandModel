@@ -241,7 +241,9 @@ public class TcpClient : MonoBehaviour
                 ProcessAngles(recievedAngles);
                 break;
             case 5:
-                textDisplay.text = "WBA Mode \n Please direct attention to WBA Hand";
+                // WBA Mode
+                textDisplay.text = "WBA Mode \nPlease direct attention to WBA Hand";
+                ProcessAngles(new string[10] {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"});
                 break;
             default:
                 break;
