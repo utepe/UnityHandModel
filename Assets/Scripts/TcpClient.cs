@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
@@ -110,7 +110,7 @@ public class TcpClient : MonoBehaviour
     {
         try
         {
-            socketConnection = new System.Net.Sockets.TcpClient("192.168.1.131", connectionPort);
+            socketConnection = new System.Net.Sockets.TcpClient("192.168.1.103", connectionPort);
             Byte[] bytes = new Byte[1024];
             while (true)
             {
@@ -135,7 +135,7 @@ public class TcpClient : MonoBehaviour
         catch (SocketException socketException)
         {
             socketExceptionFlag = true;
-            Debug.Log("Socket exception: " + socketException);
+            Debug.Log("Socket exception in ListenForData: " + socketException);
         }
     }
 
@@ -220,10 +220,14 @@ public class TcpClient : MonoBehaviour
                 // IDLE state
                 // Do nothing during the initial default state
                 textDisplay.text = "WBA Capstone IDLE Mode";
-                ProcessAngles(new string[10] {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"});
+                if(calibrationStep == 3){
+                    ProcessAngles(new string[10] {"90", "0", "90", "0", "90", "0", "90", "0", "90", "0"});
+                }else{
+                    ProcessAngles(new string[10] {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"});
+                }
 
                 if(1 < calibrationStep && calibrationStep < 4){
-                    textDisplay.text = "Calibration Step: " + (calibrationStep-1) + " Complete \nPress button to continue";
+                    textDisplay.text = "Calibration Step: " + (calibrationStep-1) + " Complete \n Move hand to current position then \n press button to continue";
                 }
                 else if(calibrationStep == 4){
                     textDisplay.text = "Calibration Complete!";
@@ -232,7 +236,7 @@ public class TcpClient : MonoBehaviour
                 if(socketExceptionFlag){
                     textDisplay.text = "Socket Exception: Connection Attempt Failed \nCheck Connection";
                 }
-
+                
                 break;
             case 1:
                 // Perform calibration step 1
