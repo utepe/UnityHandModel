@@ -1913,6 +1913,8 @@ MonoBehaviour:
   b_l_pinky2: {fileID: 1624512215}
   b_l_pinky3: {fileID: 801955363}
   textDisplay: {fileID: 643003939}
+  vrModeButton: {fileID: 1724955826}
+  wbaModeButton: {fileID: 86904390}
   calibrationStep1Lines: []
   calibrationStep1FilePath: Assets/Scripts/calibrationStep1.txt
   calibrationStep2Lines: []

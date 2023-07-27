@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
@@ -28,6 +28,9 @@ public class TcpClient : MonoBehaviour
 
 	[SerializeField] 
     public Text textDisplay;
+
+    public Button vrModeButton;
+    public Button wbaModeButton;
 
 	// Might have to make this static
     private static int calibrationStep = 1;
@@ -202,6 +205,14 @@ public class TcpClient : MonoBehaviour
 	/// Update is called once per frame
     void Update()
     {
+        if((currentStep == 0 && calibrationStep == 1) || currentStep == 4 || currentStep == 5){
+            vrModeButton.interactable = true;
+            wbaModeButton.interactable = true;
+        }else{
+            vrModeButton.interactable = false;
+            wbaModeButton.interactable = false;
+        }
+
         // Move finger based on calibration step
         switch (currentStep)
         {
